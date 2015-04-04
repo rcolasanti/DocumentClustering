@@ -3,7 +3,7 @@
 #
 #  untitled.py
 #  
-#  Copyright 2015  <pi@raspberrypi>
+#  Copyright 2015  <pcode.colasanti@gmail.comi>
 #  
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -36,12 +36,29 @@ class DocumentClustering:
             newline = line.rstrip('\r\n')
             print newline
             self.titles.append(newline)
+            
+    def read_synopses(self):
+        t_file = "/home/pi/Programming/Projects/DocumentClustering/Data/synopses_list_imdb.txt"
+        synopses=''
+        count = 0
+        rf = open(t_file, 'r')
+        for line in rf:
+            if 'BREAKS HERE' in line:
+                print count,synopses
+                synopses=''
+                count+=1
+            else:
+                for c in line:
+                    if c in self.ascii_codes:
+                        synopses+=c
+        
 
 
 
 def main():
     dc = DocumentClustering()
-    dc.read_titles()
+    #dc.read_titles()
+    dc.read_synopses()
     return 0
 
 if __name__ == '__main__':
