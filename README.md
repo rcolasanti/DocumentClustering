@@ -32,3 +32,12 @@ Consider a document containing 100 words wherein the word cat appears 3 times. T
 This is then used to look at differances between the documents
 method used is cosine similarity informationn fom here:
 https://janav.wordpress.com/2013/10/27/tf-idf-and-cosine-similarity/
+
+
+Cosine Similarity (d1, d2) =  Dot product(d1, d2) / ||d1|| * ||d2||
+
+Dot product (d1,d2) = d1[0] * d2[0] + d1[1] * d2[1] * … * d1[n] * d2[n]
+||d1|| = square root(d1[0]2 + d1[1]2 + ... + d1[n]2)
+||d2|| = square root(d2[0]2 + d2[1]2 + ... + d2[n]2)
+
+note that the ||dn|| are constant for a document
