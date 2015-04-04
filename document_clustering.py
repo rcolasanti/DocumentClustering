@@ -26,12 +26,16 @@ import string
 import nltk
 import re
 import math
+
+import numpy as np
+
 from nltk.stem.snowball import SnowballStemmer
 
 class DocumentClustering:
     def __init__(self):
         self.titles=[]
         self.synopsis_frequency=[]
+        self.synopsis_frequency_totals=[]
         self.corpus_frequency={}
         self.ascii_codes= string.ascii_letters + ' '#string.punctuation + string.digits+' '
         self.data_path = "/home/pi/Programming/Projects/DocumentClustering/Data/"
@@ -53,22 +57,16 @@ class DocumentClustering:
         t_file =self.data_path+"text/synopsis_list_imdb.txt"
         synopsis=''
         rf = open(t_file, 'r')
-        count = 0
         for line in rf:
             if 'BREAKS HERE' in line:
                 word_frequency = self.parse_synopsis(synopsis)
                 self.synopsis_frequency.append(word_frequency)
                 synopsis=''
-                print count
-                count+=1
             else:
                 for c in line:
                     if c in self.ascii_codes:
                         synopsis+=c
-        print
-        for key in  self.corpus_frequency:
-            self.corpus_frequency[key]= math.log(count/self.corpus_frequency[key])
-            print key,self.corpus_frequency[key]
+        
                         
     def parse_synopsis(self,synopsis):
         document_frequency={}
@@ -92,13 +90,44 @@ class DocumentClustering:
                 self.corpus_frequency[key]=1
 
         return  document_frequency
+        
+    def tf_idf(self):
+        count = len(self.corpus_frequency)
+        for key in  self.corpus_frequency:
+            self.corpus_frequency[key]= math.log(count/self.corpus_frequency[key])
+        
+        
+        print len(self.synopsis_frequency)
+        for synopsis_tf in self.synopsis_frequency:
+            total = 0
+            for key in synopsis_tf:
+                synopsis_tf[key] = synopsis_tf[key]*self.corpus_frequency[key]
+                total+=synopsis_tf[key]*synopsis_tf[key]
+                
+            self.synopsis_frequency_totals.append(math.sqrt(total))
+        
+    def matrix(self):
+        tf_idf_matrix = np.zeros((100,100))
+        for i in range(100):
+            for j in range(i,100):
+                dot_product = 0
+                for tf in self.synopsis_frequency[i]:
+                    if tf in self.synopsis_frequency[j]:
+                        dot_product += self.synopsis_frequency[i][tf] * self.synopsis_frequency[j][tf]
+                if self.synopsis_frequency_totals[j]>0:
+                    tf_idf[i][j]=dot_product/(self.synopsis_frequency_totals[i]*self.synopsis_frequency_totals[j])
+                    tf_idf[j][i]=tf_idf[i][j]
+        return tf_idf
+                
 
 
 def main():
     dc = DocumentClustering()
     #dc.read_titles()
     dc.read_synopsis()
-    print len(dc.corpus_frequency)
+    dc.tf_idf()
+    matrix = dc.matrix()
+    print len(matrix)
     return 0
 
 if __name__ == '__main__':
